@@ -4,8 +4,6 @@
 
 This allows you to render HTML content within your application. It accepts a string of HTML content as a prop and renders it within a WebView component. This makes it easy to integrate rich HTML content into your React Native application.
 
----
-
 ## Installation
 
 ### Expo
@@ -20,8 +18,6 @@ expo install react-native-html-component react-native-webview
 yarn install react-native-html-component react-native-webview
 ```
 
----
-
 ## Usage
 
 ```jsx
@@ -33,8 +29,6 @@ export default function App() {
     )
 }
 ```
-
----
 
 ## Props
 
@@ -87,6 +81,3 @@ An optional number that sets the font size of the root html.
 An optional StyleProp object that can be used to apply custom styles to the component.
 
 ➤ Type: **`StyleProp<ViewStyle>`** <br/>
-
----
-
