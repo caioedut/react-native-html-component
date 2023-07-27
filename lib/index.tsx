@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
 export type ReactNativeHtmlComponentProps = {
-  html: string;
+  html: string | null | undefined;
   allowTextSelection?: boolean;
   backgroundColor?: string;
   color?: string;
@@ -13,8 +13,8 @@ export type ReactNativeHtmlComponentProps = {
 
 export default function ReactNativeHtmlComponent({
   html: body,
-  allowTextSelection,
-  color,
+  allowTextSelection = false,
+  color = '#000000',
   fontSize = 16,
   style,
 }: ReactNativeHtmlComponentProps) {
@@ -23,12 +23,12 @@ export default function ReactNativeHtmlComponent({
   const script = `
     <script>
       function resize() {
-        window.ReactNativeWebView.postMessage(document.documentElement.scrollHeight);
+        window.ReactNativeWebView.postMessage(document.body.scrollHeight);
       }
 
       document.addEventListener("DOMContentLoaded", () => {
         resize();
-        (new ResizeObserver(resize)).observe(document.documentElement);
+        (new ResizeObserver(resize)).observe(document.body);
       });
     </script>
   `;
@@ -45,7 +45,7 @@ export default function ReactNativeHtmlComponent({
 
               <style>
                 html {
-                  ${color ? `color: ${color};` : ''}
+                  color: ${color};
                   font-size: ${fontSize}px;
                   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
                   ${allowTextSelection ? '' : 'user-select: none;'}
@@ -55,7 +55,7 @@ export default function ReactNativeHtmlComponent({
               ${script}
             </head>
             <body>
-              ${body}
+              ${body ?? ''}
             </body>
           </html>
         `,
