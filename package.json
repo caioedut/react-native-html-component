@@ -19,8 +19,9 @@
   ],
   "main": "dist/index.js",
   "scripts": {
-    "prebuild": "pmex rimraf ./dist",
-    "build": "pmex tsc --build --force"
+    "test": "tsx scripts/test.ts",
+    "build": "tsx scripts/build.ts",
+    "publish:stable": "tsx scripts/publish.ts"
   },
   "devDependencies": {
     "@types/react": "^18.2.17",
@@ -29,6 +30,7 @@
     "react": "^18.2.0",
     "react-native": "^0.72.3",
     "react-native-webview": "^13.3.0",
+    "tsx": "^3.12.7",
     "typescript": "^5.1.6"
   },
   "peerDependencies": {
