@@ -21,7 +21,7 @@ yarn install react-native-html-component react-native-webview
 ## Usage
 
 ```jsx
-import Html from 'react-native-html-component';
+import HtmlC from 'react-native-html-component';
 
 export default function App() {
     return (

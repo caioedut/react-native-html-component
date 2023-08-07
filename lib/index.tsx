@@ -1,8 +1,8 @@
-import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { useState } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
+import WebView, { WebViewMessageEvent } from 'react-native-webview';
 
-export type ReactNativeHtmlComponentProps = {
+export type HtmlComponentProps = {
   html: string | null | undefined;
   allowTextSelection?: boolean;
   backgroundColor?: string;
@@ -11,55 +11,68 @@ export type ReactNativeHtmlComponentProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-export default function ReactNativeHtmlComponent({
+export default function HtmlComponent({
   html: body,
   allowTextSelection = false,
   color = '#000000',
   fontSize = 16,
   style,
-}: ReactNativeHtmlComponentProps) {
+}: HtmlComponentProps) {
   const [height, setHeight] = useState<number>();
 
-  const script = `
-    <script>
-      function resize() {
-        window.ReactNativeWebView.postMessage(document.body.scrollHeight);
-      }
+  const scripts = `
+    window.ReactNativeWebView.postMessage(document.documentElement.scrollHeight);
+  `;
 
-      document.addEventListener("DOMContentLoaded", () => {
-        resize();
-        (new ResizeObserver(resize)).observe(document.body);
-      });
-    </script>
+  const html = `
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+
+        <style>
+          html {
+            color: ${color};
+            font-size: ${fontSize}px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            ${allowTextSelection ? '' : 'user-select: none;'}
+          }
+
+          html, body {
+            overflow: hidden;
+          }
+        </style>
+
+        <script>
+          function resize() {
+            ${scripts}
+          }
+
+          document.addEventListener("DOMContentLoaded", () => {
+            resize();
+            (new ResizeObserver(resize)).observe(document.documentElement);
+          });
+        </script>
+      </head>
+      <body>
+        ${body ?? ''}
+      </body>
+    </html>
   `;
 
   return (
-    <WebView
-      onMessage={(e: WebViewMessageEvent) => setHeight(Number(e.nativeEvent?.data))}
-      style={[{ backgroundColor: 'transparent', height }, ...(Array.isArray(style) ? style : [style])]}
-      source={{
-        html: `
-          <html>
-            <head>
-              <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-
-              <style>
-                html {
-                  color: ${color};
-                  font-size: ${fontSize}px;
-                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-                  ${allowTextSelection ? '' : 'user-select: none;'}
-                }
-              </style>
-
-              ${script}
-            </head>
-            <body>
-              ${body ?? ''}
-            </body>
-          </html>
-        `,
-      }}
-    />
+    <View style={[{ height }, ...(Array.isArray(style) ? style : [style])]}>
+      <WebView
+        source={{ html }}
+        scrollEnabled={false}
+        originWhitelist={['*']}
+        overScrollMode="never"
+        contentInsetAdjustmentBehavior="never"
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        injectedJavaScript={scripts}
+        onMessage={(e: WebViewMessageEvent) => setHeight(Number(e.nativeEvent?.data))}
+        style={{ backgroundColor: 'transparent' }}
+      />
+    </View>
   );
 }
