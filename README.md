@@ -1,8 +1,8 @@
 # React Native HTML Component
 
-[![npm version](https://badge.fury.io/js/react-native-html-component.svg)](https://badge.fury.io/js/react-native-html-component)
-
 This allows you to render HTML content within your application. It accepts a string of HTML content as a prop and renders it within a WebView component. This makes it easy to integrate rich HTML content into your React Native application.
+
+[![npm version](https://badge.fury.io/js/react-native-html-component.svg)](https://badge.fury.io/js/react-native-html-component)
 
 ## Installation
 
@@ -15,7 +15,12 @@ expo install react-native-html-component react-native-webview
 ### Other
 
 ```shell
-yarn install react-native-html-component react-native-webview
+npm install react-native-html-component react-native-webview
+# OR
+yarn add react-native-html-component react-native-webview
+#OR
+pnpm add react-native-html-component react-native-webview
+
 ```
 
 ## Usage
