@@ -1,8 +1,8 @@
 {
   "expo": {
     "owner": "caioedut",
-    "name": "react-native-document-example",
-    "slug": "react-native-document-example",
+    "name": "react-native-html-component-example",
+    "slug": "react-native-html-component-example",
     "orientation": "portrait",
     "assetBundlePatterns": [
       "**/*"
@@ -10,7 +10,17 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {
+    "android": {},
+    "extra": {
+      "eas": {
+        "projectId": "26fb03a5-450e-416b-9af1-e37b24e3962d"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/26fb03a5-450e-416b-9af1-e37b24e3962d"
     }
   }
 }
