@@ -11,16 +11,16 @@
       "supportsTablet": true
     },
     "android": {},
-    "extra": {
-      "eas": {
-        "projectId": "26fb03a5-450e-416b-9af1-e37b24e3962d"
-      }
-    },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/26fb03a5-450e-416b-9af1-e37b24e3962d"
+      "url": "https://u.expo.dev/90f33948-be3d-47c5-9626-fe3da145e108"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "90f33948-be3d-47c5-9626-fe3da145e108"
+      }
     }
   }
 }
