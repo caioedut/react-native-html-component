@@ -18,7 +18,8 @@ export default function HtmlComponent({
   fontSize = 16,
   style,
 }: HtmlComponentProps) {
-  const [height, setHeight] = useState<number>();
+  // must have value greater than 0, or may cause crash on android
+  const [height, setHeight] = useState<number>(1);
 
   const scripts = `
     window.ReactNativeWebView.postMessage(document.documentElement.scrollHeight);
@@ -70,7 +71,7 @@ export default function HtmlComponent({
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         injectedJavaScript={scripts}
-        onMessage={(e: WebViewMessageEvent) => setHeight(Number(e.nativeEvent?.data))}
+        onMessage={(e: WebViewMessageEvent) => setHeight(Number(e.nativeEvent?.data || 1))}
         style={{ backgroundColor: 'transparent' }}
       />
     </View>
