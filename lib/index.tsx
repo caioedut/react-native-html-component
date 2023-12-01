@@ -9,6 +9,7 @@ export type HtmlComponentProps = {
   color?: string;
   fontSize?: number;
   style?: StyleProp<ViewStyle>;
+  androidLayerType?: 'none' | 'software' | 'hardware';
 };
 
 export default function HtmlComponent({
@@ -17,12 +18,15 @@ export default function HtmlComponent({
   color = '#000000',
   fontSize = 16,
   style,
+  androidLayerType = 'none',
 }: HtmlComponentProps) {
   // must have value greater than 0, or may cause crash on android
   const [height, setHeight] = useState<number>(1);
 
   const scripts = `
-    window.ReactNativeWebView.postMessage(document.documentElement.scrollHeight);
+    if (document && document.documentElement) {
+      window.ReactNativeWebView.postMessage(document.documentElement.scrollHeight);
+    }
   `;
 
   const html = `
@@ -68,9 +72,13 @@ export default function HtmlComponent({
         originWhitelist={['*']}
         overScrollMode="never"
         contentInsetAdjustmentBehavior="never"
+        javaScriptEnabled
+        allowsFullscreenVideo
+        allowsInlineMediaPlayback
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         injectedJavaScript={scripts}
+        androidLayerType={androidLayerType}
         onMessage={(e: WebViewMessageEvent) => setHeight(Number(e.nativeEvent?.data || 1))}
         style={{ backgroundColor: 'transparent' }}
       />
