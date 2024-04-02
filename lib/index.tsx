@@ -25,7 +25,7 @@ export default function HtmlComponent({
 
   const scripts = `
     if (document && document.documentElement) {
-      window.ReactNativeWebView.postMessage(document.documentElement.scrollHeight);
+      window.ReactNativeWebView.postMessage(document.documentElement.getBoundingClientRect().height);
     }
   `;
 
