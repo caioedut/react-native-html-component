@@ -1,7 +1,10 @@
 import HtmlComponent from 'react-native-html-component';
-import { SafeAreaView, ScrollView } from 'react-native';
+import { Button, SafeAreaView, ScrollView } from 'react-native';
+import { useState } from 'react';
 
 export default function Main() {
+  const [isVisible, setIsVisible] = useState(true);
+
   const html = `
     <h1 style="text-align: center;">Hello World!</h1>
 
@@ -37,15 +40,19 @@ export default function Main() {
 
   return (
     <SafeAreaView>
+      <Button title={isVisible ? 'Hide' : 'Show'} onPress={() => setIsVisible((current) => !current)} />
+
       <ScrollView>
-        <HtmlComponent
-          html={html}
-          css={css}
-          onNavigate={({ url }) => {
-            alert(`onNavigate: ${url}`);
-            return true;
-          }}
-        />
+        {isVisible && (
+          <HtmlComponent
+            html={html}
+            css={css}
+            onNavigate={({ url }) => {
+              alert(`onNavigate: ${url}`);
+              return true;
+            }}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );

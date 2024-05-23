@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Linking, StyleProp, Platform, View, ViewStyle } from 'react-native';
+import { Linking, StyleProp, View, ViewStyle } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 
 export type HtmlComponentProps = {
@@ -9,6 +9,7 @@ export type HtmlComponentProps = {
   color?: string;
   fontSize?: number;
   css?: string;
+  delay?: number;
   style?: StyleProp<ViewStyle>;
   androidLayerType?: 'none' | 'software' | 'hardware';
   onNavigate?: (state: { url: string }) => boolean;
@@ -20,6 +21,7 @@ export default function HtmlComponent({
   color = '#000000',
   fontSize = 16,
   css = '',
+  delay = 50,
   androidLayerType = 'none',
   style,
   onNavigate,
@@ -30,9 +32,13 @@ export default function HtmlComponent({
   const [height, setHeight] = useState<number>(1);
 
   const scripts = `
-    if (document && document.documentElement) {
-      window.ReactNativeWebView.postMessage(document.documentElement.getBoundingClientRect().height);
-    }
+    setTimeout(function () {
+      if (document && document.documentElement) {
+        window.ReactNativeWebView.postMessage(document.documentElement.scrollHeight);
+      }
+    }, ${delay});
+
+    true; // note: this is required, or you'll sometimes get silent failures
   `;
 
   const html = `
@@ -64,11 +70,10 @@ export default function HtmlComponent({
 
     <script>
       function resize() {
-        ${Platform.OS === 'android' ? `setTimeout(() => { ${scripts} }, 100);` : scripts}
+        ${scripts}
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-        resize();
         (new ResizeObserver(resize)).observe(document.documentElement);
       });
     </script>
@@ -93,7 +98,7 @@ export default function HtmlComponent({
         setSupportMultipleWindows={false}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        // injectedJavaScript={scripts}
+        injectedJavaScript={scripts}
         androidLayerType={androidLayerType}
         onMessage={(e: WebViewMessageEvent) => setHeight(Number(e.nativeEvent?.data || 1))}
         style={{ backgroundColor: 'transparent' }}

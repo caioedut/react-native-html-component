@@ -80,6 +80,16 @@ An optional string with pure css that will be injected into the html.
 
 ---
 
+### `delay`
+
+Delay in milliseconds to calculate the element height. It is recommended to use values above 50ms to avoid rendering whitespace.
+
+➤ Type: **`number`** <br/>
+➤ Default: **`50`** <br/>
+
+---
+
+
 ### `fontSize`
 
 An optional number that sets the font size of the root html.
