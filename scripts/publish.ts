@@ -1,12 +1,14 @@
-import pmex from 'pmex';
-import { execSync } from 'child_process';
+import pmex, { args } from 'pmex';
+
+import { execSync } from 'node:child_process';
 
 pmex('test');
 
-pmex('tsc --build --force');
+pmex('build');
 
-pmex('npm version patch');
+if (!args()._raw.includes('--no-version')) {
+  pmex('npm version patch');
+  execSync('git push', { stdio: 'inherit' });
+}
 
-pmex('npm publish');
-
-execSync('git push', { stdio: 'inherit' });
+execSync('npm publish', { stdio: 'inherit' });
