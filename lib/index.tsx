@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Linking, StyleProp, View, ViewStyle } from 'react-native';
+import { Linking, StyleProp, Platform, View, ViewStyle } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 
 export type HtmlComponentProps = {
@@ -64,9 +64,7 @@ export default function HtmlComponent({
 
     <script>
       function resize() {
-        setTimeout(() => {
-          ${scripts}
-        }, 100);
+        ${Platform.OS === 'android' ? `setTimeout(() => { ${scripts} }, 100);` : scripts}
       }
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -95,7 +93,7 @@ export default function HtmlComponent({
         setSupportMultipleWindows={false}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        injectedJavaScript={scripts}
+        // injectedJavaScript={scripts}
         androidLayerType={androidLayerType}
         onMessage={(e: WebViewMessageEvent) => setHeight(Number(e.nativeEvent?.data || 1))}
         style={{ backgroundColor: 'transparent' }}
