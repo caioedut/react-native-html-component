@@ -26,13 +26,13 @@
   },
   "devDependencies": {
     "@types/react": "^18.2.17",
-    "pmex": "^0.0.34",
+    "pmex": "^1.1.0",
     "prettier": "^3.0.0",
     "react": "^18.2.0",
     "react-native": "^0.72.3",
     "react-native-webview": "^13.3.0",
-    "tsx": "^3.12.7",
-    "typescript": "^5.1.6"
+    "tsx": "^4.10.5",
+    "typescript": "^5.4.5"
   },
   "peerDependencies": {
     "react": "*",

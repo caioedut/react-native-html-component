@@ -1,17 +1,31 @@
 import pmex from 'pmex';
 
-import { rmSync } from 'fs';
+import { cpSync, rmSync } from 'node:fs';
 
 const cwd = './example';
 
-pmex('tsc --build --force');
+pmex('build');
 
-rmSync(`${cwd}/yarn.lock`, { force: true });
+pmex(`install`, { cwd });
 
-rmSync(`${cwd}/package-lock.json`, { force: true });
+rmSync(`${cwd}/node_modules/react-native-html-component`, {
+  force: true,
+  recursive: true,
+});
 
-rmSync(`${cwd}/node_modules/react-native-html-component`, { force: true, recursive: true });
+cpSync(`./dist`, `${cwd}/node_modules/react-native-html-component/dist`, {
+  force: true,
+  recursive: true,
+});
 
-pmex(`--cwd ${cwd} install`);
+cpSync(`./package.json`, `${cwd}/node_modules/react-native-html-component/package.json`, {
+  force: true,
+});
 
-pmex(`--cwd ${cwd} expo start -c`);
+pmex(
+  {
+    bun: 'bunx expo start -c',
+    default: 'npx expo start -c',
+  },
+  { cwd },
+);

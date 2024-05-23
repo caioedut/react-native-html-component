@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { useRef, useState } from 'react';
+import { Linking, StyleProp, View, ViewStyle } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 
 export type HtmlComponentProps = {
@@ -8,8 +8,10 @@ export type HtmlComponentProps = {
   backgroundColor?: string;
   color?: string;
   fontSize?: number;
+  css?: string;
   style?: StyleProp<ViewStyle>;
   androidLayerType?: 'none' | 'software' | 'hardware';
+  onNavigate?: (state: { url: string }) => boolean;
 };
 
 export default function HtmlComponent({
@@ -17,9 +19,13 @@ export default function HtmlComponent({
   allowTextSelection = false,
   color = '#000000',
   fontSize = 16,
-  style,
+  css = '',
   androidLayerType = 'none',
+  style,
+  onNavigate,
 }: HtmlComponentProps) {
+  const baseUrlRef = useRef<string>();
+
   // must have value greater than 0, or may cause crash on android
   const [height, setHeight] = useState<number>(1);
 
@@ -30,39 +36,48 @@ export default function HtmlComponent({
   `;
 
   const html = `
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 
-        <style>
-          html {
-            color: ${color};
-            font-size: ${fontSize}px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            ${allowTextSelection ? '' : 'user-select: none;'}
-          }
+    <style>
+      ${
+        allowTextSelection
+          ? ''
+          : '* { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }'
+      }
 
-          html, body {
-            overflow: hidden;
-          }
-        </style>
+      html {
+        color: ${color};
+        font-size: ${fontSize}px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        overflow: hidden;
+      }
 
-        <script>
-          function resize() {
-            ${scripts}
-          }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
 
-          document.addEventListener("DOMContentLoaded", () => {
-            resize();
-            (new ResizeObserver(resize)).observe(document.documentElement);
-          });
-        </script>
-      </head>
-      <body>
-        ${body ?? ''}
-      </body>
-    </html>
-  `;
+    ${css ? `<style>${css}</style>` : ''}
+
+    <script>
+      function resize() {
+        ${scripts}
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        resize();
+        (new ResizeObserver(resize)).observe(document.documentElement);
+      });
+    </script>
+  </head>
+  <body>
+    ${body ?? ''}
+  </body>
+</html>
+`;
 
   return (
     <View style={[{ height }, ...(Array.isArray(style) ? style : [style])]}>
@@ -75,12 +90,46 @@ export default function HtmlComponent({
         javaScriptEnabled
         allowsFullscreenVideo
         allowsInlineMediaPlayback
+        setSupportMultipleWindows={false}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         injectedJavaScript={scripts}
         androidLayerType={androidLayerType}
         onMessage={(e: WebViewMessageEvent) => setHeight(Number(e.nativeEvent?.data || 1))}
         style={{ backgroundColor: 'transparent' }}
+        onLoadStart={({ nativeEvent }) => {
+          if (!baseUrlRef.current) {
+            // detect native OS "about:blank"
+            baseUrlRef.current = decodeURIComponent(nativeEvent.url);
+          }
+        }}
+        onShouldStartLoadWithRequest={(request) => {
+          if (!baseUrlRef.current) {
+            return true;
+          }
+
+          let url = decodeURIComponent(request.url);
+
+          // is root url
+          if (baseUrlRef.current === url) {
+            return true;
+          }
+
+          if (url.startsWith(baseUrlRef.current)) {
+            url = url.substring(baseUrlRef.current?.length);
+          }
+
+          let isDefaultPrevented = false;
+          if (onNavigate instanceof Function) {
+            isDefaultPrevented = !onNavigate({ url });
+          }
+
+          if (!isDefaultPrevented) {
+            Linking.openURL(url).catch(() => null);
+          }
+
+          return false;
+        }}
       />
     </View>
   );
