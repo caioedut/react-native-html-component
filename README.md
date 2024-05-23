@@ -26,7 +26,7 @@ pnpm add react-native-html-component react-native-webview
 ## Usage
 
 ```jsx
-import HtmlC from 'react-native-html-component';
+import Html from 'react-native-html-component';
 
 export default function App() {
     return (
@@ -72,6 +72,14 @@ An optional string that sets the text color of the root html.
 
 ---
 
+### `css`
+
+An optional string with pure css that will be injected into the html.
+
+➤ Type: **`string`** <br/>
+
+---
+
 ### `fontSize`
 
 An optional number that sets the font size of the root html.
@@ -86,3 +94,15 @@ An optional number that sets the font size of the root html.
 An optional StyleProp object that can be used to apply custom styles to the component.
 
 ➤ Type: **`StyleProp<ViewStyle>`** <br/>
+
+---
+
+### `onNavigate`
+
+Event fires every time a link is pressed or the url is changed in some way.
+
+The default action opens the url in the browser with `Linking.open(url)`.
+
+Return `true` or `false` to enable or disable the default action.
+
+➤ Type: **`({ url: string }) => boolean`** <br/>

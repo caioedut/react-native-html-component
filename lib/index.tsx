@@ -64,7 +64,9 @@ export default function HtmlComponent({
 
     <script>
       function resize() {
-        ${scripts}
+        setTimeout(() => {
+          ${scripts}
+        }, 100);
       }
 
       document.addEventListener("DOMContentLoaded", () => {
