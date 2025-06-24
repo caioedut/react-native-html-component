@@ -6,7 +6,7 @@ pmex('test');
 
 pmex('build');
 
-if (!args()._raw.includes('--no-version')) {
+if (!args()['no-version']) {
   pmex('npm version patch');
   execSync('git push', { stdio: 'inherit' });
 }

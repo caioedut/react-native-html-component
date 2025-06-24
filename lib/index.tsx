@@ -26,7 +26,7 @@ export default function HtmlComponent({
   style,
   onNavigate,
 }: HtmlComponentProps) {
-  const baseUrlRef = useRef<string>();
+  const baseUrlRef = useRef<string>(undefined);
 
   // must have value greater than 0, or may cause crash on android
   const [height, setHeight] = useState<number>(1);
@@ -34,7 +34,7 @@ export default function HtmlComponent({
   const scripts = `
     setTimeout(function () {
       if (document && document.documentElement) {
-        window.ReactNativeWebView.postMessage(document.documentElement.scrollHeight);
+        window.ReactNativeWebView.postMessage(document.documentElement.scrollHeight + '');
       }
     }, ${delay});
 
@@ -100,7 +100,13 @@ export default function HtmlComponent({
         showsHorizontalScrollIndicator={false}
         injectedJavaScript={scripts}
         androidLayerType={androidLayerType}
-        onMessage={(e: WebViewMessageEvent) => setHeight(Number(e.nativeEvent?.data || 1))}
+        onMessage={(e: WebViewMessageEvent) => {
+          const newHeight = Number(e.nativeEvent?.data);
+
+          if (typeof newHeight === 'number' && !Number.isNaN(newHeight)) {
+            setHeight(Math.max(newHeight, 1));
+          }
+        }}
         style={{ backgroundColor: 'transparent' }}
         onLoadStart={({ nativeEvent }) => {
           if (!baseUrlRef.current) {
